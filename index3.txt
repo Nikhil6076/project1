@@ -1,0 +1,152 @@
+var a1=require('fs');
+var args=process.argv;
+strr=args[2]
+var tem=strr.split(";")
+inp=tem[0].split("=")[1]
+k=parseInt(tem[1].split("=")[1])
+outp=tem[2].split("=")[1]
+a1.readFile(inp,(err,data)=>{
+    if(err) throw err;
+    var dat11=data.toString().replace(/([0-9]|\W)/g,' ')
+    var dat=dat11.toString().replace(/(\s\s+|\n|\t)/g, ' ')
+    var l=dat.split(" ");
+   var fl=l.filter(function(value,index,arr){
+       return value!='';
+   });
+   a1.readFile('stop.txt',(err,data1)=>{
+       if(err) throw err;
+       var dat1=data1.toString().replace(/\n/g,' ')
+       var l1=dat1.split(" ")
+        // console.log(l1)
+       var mod=fl.filter(function(value,ind,arr){
+              return !stw(value,l1,0,l1.length)         
+    })
+   var a=new Map();
+ var ma=recr(0,mod,mod.length,a);
+ var lst = Array.from(ma,([nam,val])=>({nam,val}))
+//  lst.sort((a,b)=>b.nam>a.nam);
+lst.sort((a,b)=>a.val-b.val);
+t=0
+var res=[]
+var s=recrr(lst,0,k,lst.length,t,res)
+console.log(s)
+s.sort(function (r1, r2){
+  if(r1.val == r2.val)
+  {
+      return (r1.nam < r2.nam) ? -1 : (r1.nam > r2.nam) ? 1 : 0;
+  }
+  else
+  {
+      return (r1.val > r2.val) ? -1 : 1;
+  }
+} 
+)
+s.sort((r1, r2) => {
+  return compareObjects(r1, r2, 'val')
+})
+//s.sort((a,b)=>b.val-a.val)
+//console.log(s)
+//recursiveInsertionSort(s);
+console.log(s)
+ wtoF(s,0,s.length);
+})})
+function wtoF(ar,i,n){
+    if(i==n){
+        return
+    }
+    else{
+        var dat=ar[i].nam+" "+ar[i].val.toString()+'\n';
+        console.log(dat);
+        a1.appendFile(outp,dat,function(err){
+            if(err){
+                throw err;
+            }
+        })
+    }
+    wtoF(ar,i+1,n);
+}
+function recr(i,arr,n,a){
+if(i==n){
+    return a;
+}
+else{
+if(a.has(arr[i])){
+a.set(arr[i],a.get(arr[i])+1);
+}
+else{
+    a.set(arr[i],1);
+}
+return recr(i+1,arr,n,a);
+}
+}
+function stw(val,arr,i,l){
+if(i==l){
+    return false
+}
+if(arr[i]==val){
+    return true
+}
+return stw(val,arr,i+1,l)
+}
+function recrr(testArr,i,k,n,t,res){
+    if(i===n-1){
+      if(t<k){
+        res.push(testArr[i])
+      }
+      return res
+    }
+    if(t===k){
+      return res
+    }
+    if(testArr[i+1].val>testArr[i].val){
+      res.push(testArr[i])
+      return recrr(testArr,i+1,k,n,t+1,res)
+    }
+    else{
+      res.push(testArr[i])
+      return recrr(testArr,i+1,k,n,t,res)
+    }
+  }
+  function compareObjects(object1, object2, key) {
+    const obj1 = object1[key]
+    const obj2 = object2[key]
+    if (obj1 < obj2) {
+      return -1
+    }
+    if (obj1 > obj2) {
+      return 1
+    }
+    return 0
+  }
+
+  let recursiveInsertionSort = (arr, i = arr.length) => {
+    if(i <= 1){
+      return;
+    }
+     
+    recursiveInsertionSort(arr, i - 1);  
+  
+    let key = arr[i - 1];
+    let j = i - 2;
+    let change=0;
+    //Sort the array
+    while(j >= 0 && arr[j].val <= key.val){
+        if(arr[j].val==key.val){
+            if(arr[j].nam<key.nam){
+                change=1;
+                arr[j + 1] = arr[j];
+                j--;
+                continue;
+            }
+            else{
+                j--;
+                continue;
+            }
+        }
+      arr[j + 1] = arr[j];
+      change=1;
+      j--;
+    }
+    if(change===1){
+    arr[j + 1] = key; }
+}
